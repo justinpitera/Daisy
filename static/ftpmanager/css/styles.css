@@ -1,0 +1,40 @@
+
+    
+    .directory, .file {
+        border: 1px solid #ddd;
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 5px;
+         display: flex;
+        align-items:stretch;
+        justify-content: space-between;
+    }
+    .text-group {
+        display: flex;
+        align-items: center;
+        flex-grow: 1; /* Add this line */
+    }
+    .icon {
+        margin-right: 10px;
+        font-size: 24px;
+    }
+    .directory:hover, .file:hover {
+        background-color: #f0f0f0;
+    }
+    a {
+        text-decoration: none;
+        color: #333;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+    .delete-button {
+        /* Additional styling for delete buttons if needed */
+        white-space: nowrap; /* Ensure the button text does not wrap */
+    }
+    .form-hidden {
+        display: none;
+    }
+
+
+    

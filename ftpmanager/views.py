@@ -207,3 +207,53 @@ def create_directory(request, current_path):
     
     # Redirect back to the listing of the current directory
     return redirect('list_ftp_files', path=current_path)
+
+
+def move_file_or_folder(request):
+    if request.method == 'POST':
+        source = request.POST['source']
+        target = request.POST['target']
+        
+        ftp_host = host_name
+        ftp_username = user_name
+        ftp_password = password
+        
+        try:
+            with FTP(ftp_host, ftp_username, ftp_password) as ftp:
+                # Perform the move operation
+                ftp.rename(source, target + "/" + source)
+                
+            return redirect('list_ftp_files')
+        except Exception as e:
+            return HttpResponse(f"Failed to move file or folder: {str(e)}")
+    
+    # If GET request, or another method, show the form
+    return render(request, 'list_files.html')
+
+
+
+def rename_file(request, current_path):
+    if request.method == 'POST':
+        current_name = request.POST['current_name']
+        new_name = request.POST['new_name']
+        decoded_path = unquote(current_path)
+
+        ftp_host = '192.168.1.167'
+        ftp_username = 'justin'
+        ftp_password = 'Romeo2020$'
+        
+        try:
+            with FTP(ftp_host, ftp_username, ftp_password) as ftp:
+                # Construct the full current and new file paths
+                current_file_path = f"{decoded_path}/{current_name}"
+                new_file_path = f"{decoded_path}/{new_name}"
+                
+                # Perform the rename operation
+                ftp.rename(current_file_path, new_file_path)
+                
+            return redirect('list_ftp_files', path=current_path)
+        except Exception as e:
+            return HttpResponse(f"Failed to rename file: {str(e)}")
+    
+    # If GET request, show the form
+    return render(request, 'rename_file.html', {'current_path': current_path})

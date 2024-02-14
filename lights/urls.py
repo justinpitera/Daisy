@@ -9,5 +9,7 @@ urlpatterns = [
     path('set_color/', views.set_color, name='set_color'),
     path('set_all_white/',views.set_all_white, name='set_all_white'),
     path('set_white/<int:bulb_id>',views.set_white, name='set_white'),
+    path('turn_off/<int:bulb_id>',views.turn_off, name='turn_off'),
+    path('turn_on/<int:bulb_id>',views.turn_on, name='turn_on'),
     path('set-light-color/<int:light_id>/', views.set_light_color, name='set_light_color'),
 ]

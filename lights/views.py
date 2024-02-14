@@ -135,6 +135,41 @@ def set_white(request,bulb_id):
     return render(request, 'lights/control_panel.html', {'lights': lights})
 
 
+
+def turn_off(request,bulb_id):
+    # Fetch all light instances from the database
+    lights = Light.objects.all()
+    try:
+        light = Light.objects.get(id=bulb_id)
+        bulb_ip = light.bulb_ip
+        bulb = Bulb(bulb_ip)
+        bulb.turn_off()
+        light.status = 0
+        light.save()
+    except Light.DoesNotExist:
+        # Handle the case where the light doesn't exist
+        pass
+    # Return a JsonResponse indicating success
+    return render(request, 'lights/control_panel.html', {'lights': lights})
+
+
+def turn_on(request,bulb_id):
+    # Fetch all light instances from the database
+    lights = Light.objects.all()
+    try:
+        light = Light.objects.get(id=bulb_id)
+        bulb_ip = light.bulb_ip
+        bulb = Bulb(bulb_ip)
+        bulb.turn_on()
+        light.status = 1
+        light.save()
+    except Light.DoesNotExist:
+        # Handle the case where the light doesn't exist
+        pass
+    # Return a JsonResponse indicating success
+    return render(request, 'lights/control_panel.html', {'lights': lights})
+
+
 def set_light_color(request, light_id):
     if request.method == 'POST':
         color = request.POST.get('color')
