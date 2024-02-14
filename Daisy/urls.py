@@ -6,4 +6,5 @@ urlpatterns = [
     path('', include('dashboard.urls')),
     path('accounts/', include('accounts.urls')),
     path('lights/', include('lights.urls')),
+    path('ftp/', include('ftpmanager.urls')),
 ]

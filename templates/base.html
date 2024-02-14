@@ -36,7 +36,7 @@
             <li class="nav-item dropdown w-100">
                 <a href="#" class="nav-link dropdown-toggle text-light pl-4" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">Home Server</a>
                 <ul class="dropdown-menu w-100" aria-labelledby="navbarDropdown">
-                    <li><a href="#" class="dropdown-item text-light pl-4 p-2">Connect via FTP</a></li>
+                    <li><a href="{% url 'list_ftp_files' %}" class="dropdown-item text-light pl-4 p-2">Connect via FTP</a></li>
                     <li><a href="#" class="dropdown-item text-light pl-4 p-2">Connect via SSH</a></li>
                 </ul>
             </li>
@@ -46,7 +46,7 @@
         </ul>
     </nav>
     <section class="p-4 my-container">
-
+        <a class="btn my-4" id="menu-btn"><i class="fa-solid fa-bars"></i></a>
         {% block content %}
         
         {% endblock %}

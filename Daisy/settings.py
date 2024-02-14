@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'dashboard',
     'accounts',
     'lights',
+    'ftpmanager',
 ]
 
 MIDDLEWARE = [
