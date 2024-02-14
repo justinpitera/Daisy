@@ -148,35 +148,62 @@ def delete_file(request, file_name):
     
     return redirect('list_ftp_files', path=current_path)
 
-@require_POST
-def delete_directory(request, dir_name):
-    current_path = request.POST.get('current_path', '')
-    decoded_dir_name = unquote(dir_name)  # Decode dir_name to handle spaces
-    full_path = os.path.join(current_path, decoded_dir_name).replace('\\', '/')  # Construct the full path
+
+
+
+
+
+
+@require_POST  # Ensure this operation can only be performed via POST for added security
+def delete_directory(request, current_path, dir_name):
+    # Decode the current path and directory name
+    decoded_path = unquote(current_path)
+    decoded_dir_name = unquote(dir_name)
+    
+    # FTP server details
+    ftp_host = '192.168.1.167'
+    ftp_username = 'justin'
+    ftp_password = 'Romeo2020$'
+    
     try:
-        ftp = ftp_connect(host_name, 21, user_name, password)
-        ftp.cwd(current_path)  # Navigate to the current directory
-        ftp.rmd(decoded_dir_name)  # Attempt to remove the directory
-        ftp.quit()
+        # Connect to the FTP server
+        with FTP(ftp_host, ftp_username, ftp_password) as ftp:
+            # Navigate to the current directory
+            ftp.cwd(decoded_path)
+            
+            # Attempt to remove the directory
+            ftp.rmd(decoded_dir_name)
     except Exception as e:
+        # Handle any errors that occur during deletion
         return HttpResponse(f"Failed to delete directory: {str(e)}", status=500)
     
+    # Redirect back to the directory listing of the current path
     return redirect('list_ftp_files', path=current_path)
+
+
+
 
 
 @require_POST
 def create_directory(request, current_path):
-    new_dir_name = request.POST.get('new_dir_name')
-    if not new_dir_name:
-        return HttpResponse("Directory name is required.", status=400)
-
-    try:
-        ftp = ftp_connect(host_name,21, user_name, password)
-        # Construct the full path for the new directory
-        new_dir_path = f"{current_path}/{new_dir_name}".strip('/')
-        ftp.mkd(new_dir_path)
-        ftp.quit()
-    except Exception as e:
-        return HttpResponse(f"Failed to create directory: {str(e)}", status=500)
+    # Decode the current path
+    decoded_path = unquote(current_path)
     
+    # Get the new directory name from the form
+    new_dir_name = request.POST.get('new_dir_name')
+    
+    # FTP server details
+    ftp_host = host_name
+    ftp_username = user_name
+    ftp_password = password
+    
+    # Connect to the FTP server and create the directory
+    with FTP(ftp_host, ftp_username, ftp_password) as ftp:
+        # Change to the current directory
+        ftp.cwd(decoded_path)
+        
+        # Create the new directory
+        ftp.mkd(new_dir_name)
+    
+    # Redirect back to the listing of the current directory
     return redirect('list_ftp_files', path=current_path)

@@ -66,7 +66,7 @@
                 <a href="{% url 'list_ftp_files' link_path|add:encoded_dir %}">{{ dir }}</a>
             </div>
         <!-- For deleting directories -->
-        <form action="{% url 'delete_directory' encoded_dir %}" method="post" style="display:inline;">
+        <form action="{% url 'delete_directory' current_path encoded_dir %}" method="post" style="display:inline;">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this directory and all its contents?');"><i class="fa-duotone fa-trash"></i></button>
 
@@ -75,27 +75,31 @@
         </form>
         </div>
     {% endfor %}
-    
-    {% for file in files %}
-        <!-- File card -->
-        <div class="file">
-            <div class="text-group">
-                <i class="icon fas fa-file"></i>
-                <a href="{% url 'download_file' current_path|add:file %}">{{ file }}</a>
-            </div>
-            <!-- For deleting files, ensure `file` is URL-encoded -->
-            <!-- Assuming you want to apply the custom filter to 'file' -->
-            <form action="{% url 'delete_file' file|urlquote %}" method="post" style="display:inline;">
-                {% csrf_token %}
-                <input type="hidden" name="current_path" value="{{ current_path }}">
-                <button type="submit" class="delete-button">Delete</button>
-            </form>
-        </div>
-    {% endfor %}
+
+
+
     </div>
 {% endif %}
 
 
+    
+    
+{% for file in files %}
+<!-- File card -->
+<div class="file">
+    <div class="text-group">
+        <i class="icon fas fa-file"></i>
+        <a href="{% url 'download_file' current_path|add:file %}">{{ file }}</a>
+    </div>
+    <!-- For deleting files, ensure `file` is URL-encoded -->
+    <!-- Assuming you want to apply the custom filter to 'file' -->
+    <form action="{% url 'delete_file' file|urlquote %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="current_path" value="{{ current_path }}">
+        <button type="submit" class="delete-button">Delete</button>
+    </form>
+</div>
+{% endfor %}
 
 
   
@@ -107,5 +111,15 @@
         <input type="hidden" name="current_path" value="{{ current_path }}">
         <button type="submit"><i class="fa-regular fa-cloud-arrow-up"></i> Upload File</button>
     </form>
+
+    <!-- Create directory form -->
+    <form action="{% url 'create_directory' current_path %}" method="post">
+        {% csrf_token %}
+        <label for="new_dir_name">New Directory Name:</label>
+        <input type="text" id="new_dir_name" name="new_dir_name" required>
+        <button type="submit">Create Directory</button>
+    </form>
+    
+    
 {% endblock content %}
 </body>

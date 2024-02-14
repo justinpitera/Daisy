@@ -10,5 +10,12 @@ urlpatterns = [
     re_path(r'^download/(?P<path>.*)$', views.download_file, name='download_file'),  # For downloading files
     re_path(r'^list-files/(?P<path>.*)$', views.list_ftp_files, name='list_ftp_files'),
     re_path(r'^upload-file/(?P<path>.*)$', views.upload_file, name='upload_file'),
+    
+
+    #testing
+    path('delete-directory/<path:current_path>/<str:dir_name>/', views.delete_directory, name='delete_directory'),
+
+
+
     path('create-directory/<path:current_path>/', views.create_directory, name='create_directory'),
 ]

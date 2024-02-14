@@ -17,7 +17,8 @@
             <a href="{% url 'turn_off_all_lights' %}" class="btn my-4" id="menu-btn"><i class="far fa-lightbulb-slash"></i></a>
             <a href="{% url 'turn_on_all_lights' %}" class="btn my-4" id="menu-btn"><i class="far fa-lightbulb"></i></a>
             <a href="{% url 'set_all_white' %}"class="btn my-4" id="menu-btn"><i class="fa-solid fa-rotate-left"></i></a>
-            
+            |
+            <a href="{% url 'add_light' %}"class="btn my-4" id="menu-btn"><i class="fa-solid fa-add"></i></a>
             <form method="POST" action="{% url 'set_color' %}">
                 {% csrf_token %}
                 <input type="color" id="colorPicker" name="color" value="#ff0000">
