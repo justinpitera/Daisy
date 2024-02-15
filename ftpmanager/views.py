@@ -1,7 +1,8 @@
 import os
 from urllib.parse import quote, unquote
-from django.http import FileResponse, Http404, HttpResponse, JsonResponse
+from django.http import FileResponse, Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 from ftpmanager.ftp_utils import *
 from django.http import HttpResponse
@@ -133,20 +134,6 @@ def upload_file(request, path=''):
 
 from urllib.parse import unquote
 
-@require_POST
-def delete_file(request, file_name):
-    current_path = request.POST.get('current_path', '')
-    decoded_file_name = unquote(file_name)  # Decode file_name to handle spaces
-    full_path = os.path.join(current_path, decoded_file_name).replace('\\', '/')  # Construct the full path
-    try:
-        ftp = ftp_connect(host_name, 21, user_name, password)
-        ftp.cwd(current_path)  # Navigate to the current directory
-        ftp.delete(decoded_file_name)  # Delete the specified file
-        ftp.quit()
-    except Exception as e:
-        return HttpResponse(f"Failed to delete file: {str(e)}", status=500)
-    
-    return JsonResponse({'message': 'File successfully deleted'})
 
 
 
@@ -181,7 +168,30 @@ def delete_directory(request, current_path, dir_name):
     return redirect('list_ftp_files', path=current_path)
 
 
+@require_POST  # Ensure that this view only responds to POST requests for added security
+def delete_file(request, file_name):
+    # Decode the file name from the URL
+    decoded_file_name = unquote(file_name)
+    current_path = request.POST.get('current_path', '')
 
+    # FTP server details
+    ftp_host = host_name
+    ftp_username = user_name
+    ftp_password = password
+    
+    try:
+        with FTP(ftp_host, ftp_username, ftp_password) as ftp:
+            # Navigate to the directory containing the file
+            ftp.cwd(current_path)
+            
+            # Delete the file
+            ftp.delete(decoded_file_name)
+            
+            # Redirect back to the directory listing
+            return HttpResponseRedirect(reverse('list_ftp_files', args=[quote(current_path)]))
+    except Exception as e:
+        # If something goes wrong, return an error response
+        return HttpResponse(f"Failed to delete file: {str(e)}", status=500)
 
 
 @require_POST

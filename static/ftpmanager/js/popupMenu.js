@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
             customMenu.style.top = `${e.pageY}px`;
 
             // Populate and show the custom menu based on the clicked directory
-            customMenu.innerHTML = `
+            customMenu.innerHTML = `   
 
                 <button onclick="renameDirectory('encodedDirPlaceholder', '${encodedDir}')">Rename</button>
                 <button onclick="moveDirectory('${encodedDir}');">Move</button>
@@ -103,21 +103,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const files = document.querySelectorAll('.file');
 
     const showFileCustomMenu = function(e, fileName) {
-        // Prevent the default action
-        e.preventDefault();
-
-        // Position the custom menu at the click location
-        customMenu.style.display = 'block';
-        customMenu.style.left = `${e.pageX}px`;
-        customMenu.style.top = `${e.pageY}px`;
-
-        // Populate and show the custom menu based on the clicked file
-        customMenu.innerHTML = `
-            <button onclick="renameFile('${fileName}')">Rename</button>
-            <button onclick="moveFile('${fileName}');">Move</button>
-            <button onclick="deleteFile('${fileName}');">Delete</button>
-        `;
+        // Check if the click is on a navigation link
+        if (!e.target.closest('.text-group a')) {
+            // Prevent the default action
+            e.preventDefault();
+    
+            // Position the custom menu at the click location
+            customMenu.style.display = 'block';
+            customMenu.style.left = `${e.pageX}px`;
+            customMenu.style.top = `${e.pageY}px`;
+    
+            // Populate and show the custom menu based on the clicked file
+            customMenu.innerHTML = `
+                <button onclick="renameFile('${fileName}')">Rename</button>
+                <button onclick="moveFile('${fileName}');">Move</button>
+                <button onclick="deleteFile('${fileName}');">Delete</button>
+            `;
+        }
     };
+    
 
     files.forEach(file => {
         file.addEventListener('click', function(e) {
@@ -152,37 +156,16 @@ function moveFile(fileName) {
 }
 
 function deleteFile(fileName) {
-    // Confirm with the user that they want to delete the file
-    const confirmed = confirm(`Are you sure you want to delete the file: ${fileName}?`);
-    if (!confirmed) {
-        return; // Stop if the user cancels
+    // Confirm before deleting
+    if (!confirm('Are you sure you want to delete this file?')) return;
+
+    // Use slugify-like logic or a mapping to find the form ID for non-trivial filenames
+    const formId = 'delete-file-' + fileName.replace(/[^a-zA-Z0-9]/g, '-'); // Simplified slugify
+    const form = document.getElementById(formId);
+    
+    if (form) {
+        form.submit(); // Submit the deletion form
+    } else {
+        alert('Error: Could not find the deletion form for the file.');
     }
-
-    // Assuming you have a hidden input field for CSRF token in your HTML
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    const currentPath = document.getElementById('current_path').value; // Ensure you have a way to get the current path
-
-    fetch(`/delete_file/${encodeURIComponent(fileName)}/`, { // Adjust URL as necessary
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken,
-        },
-        body: JSON.stringify({
-            'current_path': currentPath, // Assuming your backend needs the current path to delete the file
-        }),
-    })
-    .then(response => {
-        if (response.ok) {
-            return response.json();
-        }
-        throw new Error('Network response was not ok.');
-    })
-    .then(data => {
-        console.log(data.message); // Assuming your backend sends a success message
-        window.location.reload(); // Reload the page to update the file list
-    })
-    .catch((error) => {
-        console.error('There was a problem with your fetch operation:', error);
-    });
 }
