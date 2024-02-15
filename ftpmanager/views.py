@@ -65,9 +65,9 @@ def list_ftp_files(request, path=""):
     # Ensure the path used in links correctly ends with a slash
     link_path = decoded_path if decoded_path.endswith('/') else decoded_path + '/'
 
-    print("Before encoding:", dirs)
+
     encoded_dirs = [(quote(dir), dir) for dir in dirs]
-    print("After encoding:", encoded_dirs)
+   
 
     # Accumulate breadcrumb paths
     breadcrumb_paths = []

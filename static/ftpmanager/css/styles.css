@@ -38,3 +38,51 @@
 
 
     
+
+
+
+   /* Base styling for custom menus */
+   #customMenu, #formCustomMenu {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    padding: 5px 0; /* Removes padding around buttons, apply padding to buttons directly */
+    border-radius: 5px;
+    width: 200px; /* Set a fixed width for the menus */
+}
+
+/* Styling for buttons within custom menus */
+#customMenu button, #formCustomMenu button {
+    display: block;
+    background-color: transparent; /* Make buttons transparent to match the menu background */
+    border: none;
+    width: 100%;
+    padding: 8px 20px; /* Add padding for better clickability and appearance */
+    text-align: left;
+    border-bottom: 1px solid #eee; /* Separator between buttons */
+    cursor: pointer;
+    font-size: 14px; /* Adjust font size for readability */
+    color: #333; /* Text color */
+}
+
+/* Remove border for the last button in the menu for a cleaner look */
+#customMenu button:last-child, #formCustomMenu button:last-child {
+    border-bottom: none;
+}
+
+/* Hover effect for buttons */
+#customMenu button:hover, #formCustomMenu button:hover {
+    background-color: #e0e0e0;
+}
+
+/* Styling for the menu headers or titles, if any */
+.menu-title {
+    padding: 5px 20px; /* Align with button padding */
+    font-size: 16px; /* Slightly larger font size for titles */
+    color: #555; /* Title text color */
+    background-color: #f0f0f0; /* Slightly different background for distinction */
+    border-bottom: 1px solid #eee; /* Separator between title and first option */
+}
