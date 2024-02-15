@@ -8,6 +8,7 @@
     
 </head>
 <body>
+    <input type="hidden" name="current_path" value="{{ current_path }}">
 
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -49,10 +50,10 @@
 
 {% for file in files %}
 <!-- File card -->
-<div class="file">
+<div class="file" data-file-name="{{ file }}">
     <div class="text-group">
         <i class="icon fas fa-file"></i>
-        <a href="{% url 'download_file' current_path|join_path:file %}">{{ file|truncate_filename }}</a>
+        <a href="{% url 'download_file' current_path|join_path:file %}">{{ file }}</a>
 
     </div>
     <!-- For deleting files -->

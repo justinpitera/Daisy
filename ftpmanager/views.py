@@ -1,6 +1,6 @@
 import os
 from urllib.parse import quote, unquote
-from django.http import FileResponse, Http404, HttpResponse
+from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 from ftpmanager.ftp_utils import *
@@ -146,7 +146,7 @@ def delete_file(request, file_name):
     except Exception as e:
         return HttpResponse(f"Failed to delete file: {str(e)}", status=500)
     
-    return redirect('list_ftp_files', path=current_path)
+    return JsonResponse({'message': 'File successfully deleted'})
 
 
 
