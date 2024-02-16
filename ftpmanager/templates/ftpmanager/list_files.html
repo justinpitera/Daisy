@@ -4,11 +4,9 @@
 {% load static %}
 <head>
     <link rel="stylesheet" href="{% static 'ftpmanager/css/styles.css' %}" />
-    
-    
+    <script src="{% static 'ftpmanager/js/popupMenu.js' %}"></script>
 </head>
 <body>
-    <input type="hidden" name="current_path" value="{{ current_path }}">
 
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -48,21 +46,26 @@
 {% endif %}
 
 
-<!-- Adjusted File Element with Deletion Form -->
 {% for file in files %}
-<div class="file" data-file-name="{{ file }}">
+<!-- File card -->
+<div class="file" data-file-name="{{ file|slugify }}">
     <div class="text-group">
         <i class="icon fas fa-file"></i>
-        <a href="{% url 'download_file' current_path|join_path:file %}">{{ file|urlquote }}</a>
+        <a href="{% url 'download_file' current_path|join_path:file %}">{{ file|truncate_filename }}</a>
     </div>
-    <!-- Hidden deletion form for each file -->
-    <form id="delete-file-{{ file|slugify }}" action="{% url 'delete_file' file %}" method="post" style="display:none;">
+    <!-- For deleting files -->
+    <form id="delete-file-{{ file|slugify }}" action="{% url 'delete_file' file|urlquote %}" method="post" style="display:none;">
         {% csrf_token %}
         <input type="hidden" name="current_path" value="{{ current_path }}">
-        <!-- The submit button can be omitted since we'll submit via JavaScript -->
+        <!-- Added data-file-name for JavaScript to use -->
+        <button type="button" class="btn btn-danger delete-btn" data-file-name="{{ file }}">
+            <i class="fa-solid fa-trash"></i>
+        </button>
     </form>
+    
 </div>
 {% endfor %}
+
 
 
 
@@ -96,22 +99,12 @@
 <!-- Button to toggle the upload form -->
 <button class="btn btn-secondary toggle-button" data-target="uploadForm" onclick="toggleForm('uploadForm')"><i class="fa-solid fa-cloud-arrow-up"></i></button>
 <!-- Upload Form -->
-<form id="uploadForm" class="form-hidden" action="{% url 'upload_file' current_path %}" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input type="file" name="file_upload" required>
-    <input type="hidden" name="current_path" value="{{ current_path }}">
-    <button type="submit"><i class="fa-solid fa-cloud-arrow-up"></i> Upload File</button>
-</form>
+
 
 <!-- Button to toggle the create directory form -->
 <button class="btn btn-secondary toggle-button" data-target="createDirectoryForm" onclick="toggleForm('createDirectoryForm')"><i class="fa-solid fa-folder-plus"></i></button>
 <!-- Create directory form -->
-<form id="createDirectoryForm" class="form-hidden" action="{% url 'create_directory' current_path %}" method="post">
-    {% csrf_token %}
-    <label for="new_dir_name">New Directory Name:</label>
-    <input type="text" id="new_dir_name" name="new_dir_name" required>
-    <button type="submit">Create Directory</button>
-</form>
+
 
 <!-- Button to toggle the move file or folder form -->
 <button class="btn btn-secondary toggle-button" data-target="moveForm" onclick="toggleForm('moveForm')"><i class="fa-solid fa-person-walking"></i></i></button>
@@ -133,40 +126,103 @@
         <!-- Add other actions as needed -->
     </ul>
 </div>
+<!-- Generic Context Menu -->
+<div id="generalContextMenu" style="display: none; position: absolute; z-index: 1000; background-color: #f9f9f9; border: 1px solid #ccc; box-shadow: 3px 3px 5px #888888; padding: 10px; border-radius: 5px;">
+    <ul style="list-style: none; margin: 0; padding: 0;">
+
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createDirectoryModal">
+            Create Directory
+        </button>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createFileModal">
+            Create File
+        </button>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadFileModal">
+            Upload File
+        </button>
+        <!-- Add other actions as needed -->
+    </ul>
+</div>
+
+
 
 
   
   <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="createDirectoryModal" tabindex="-1" role="dialog" aria-labelledby="createDirectoryModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <h5 class="modal-title" id="createDirectoryModalLabel">New Directory</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form id="createDirectoryForm" action="{% url 'create_directory' current_path %}" method="post">
+                {% csrf_token %}
+                <label for="new_dir_name">Name:</label>
+                <input type="text" id="new_dir_name" name="new_dir_name" required>
+                <br>
+                <br>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                  </div>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+    <!-- Modal -->
+    <div class="modal fade" id="createFileModal" tabindex="-1" role="dialog" aria-labelledby="createFileModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="createFileModalLabel">Modal title</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              ...
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+  
+  <!-- Modal -->
+  <div class="modal fade" id="uploadFileModal" tabindex="-1" role="dialog" aria-labelledby="uploadFileModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="uploadFileModalLabel">Upload File</h5>
           <button type="button" class="btn" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-            <form action="{% url 'rename_file' current_path %}" method="post">
+            <form id="uploadForm" action="{% url 'upload_file' current_path %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-        
-                <input type="hidden" id="current_name" name="current_name" required>
-                
-                <label for="new_name">New File Name:</label>
-                <input type="text" id="new_name" name="new_name" required>
-                
-
+                <input type="file" name="file_upload" required>
+                <input type="hidden" name="current_path" value="{{ current_path }}">
+                <br>
+                <br>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
-                </div>
-                
+                    <button type="submit" class="btn btn-primary">Upload File</button>
+                  </div>
             </form>
         </div>
 
       </div>
     </div>
   </div>
-  <script src="{% static 'ftpmanager/js/popupMenu.js' %}"></script>
+
 </body>
+
 {% endblock content %}

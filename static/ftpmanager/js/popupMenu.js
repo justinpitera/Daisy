@@ -97,40 +97,37 @@ function moveDirectory(encodedDir) {
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Existing setup for directories...
-    
-    // New setup for files
-    const files = document.querySelectorAll('.file');
+    // Assuming customMenu setup is correctly initialized here
 
-    const showFileCustomMenu = function(e, fileName) {
-        // Check if the click is on a navigation link
-        if (!e.target.closest('.text-group a')) {
-            // Prevent the default action
-            e.preventDefault();
-    
-            // Position the custom menu at the click location
-            customMenu.style.display = 'block';
-            customMenu.style.left = `${e.pageX}px`;
-            customMenu.style.top = `${e.pageY}px`;
-    
-            // Populate and show the custom menu based on the clicked file
-            customMenu.innerHTML = `
-                <button onclick="renameFile('${fileName}')">Rename</button>
-                <button onclick="moveFile('${fileName}');">Move</button>
-                <button onclick="deleteFile('${fileName}');">Delete</button>
-            `;
+    // Use event delegation from a parent that exists at page load
+    document.body.addEventListener('click', function(e) {
+        // Check if the clicked element or one of its parents is a .file element
+        const fileElement = e.target.closest('.file');
+        if (fileElement) {
+            const fileName = fileElement.getAttribute('data-file-name');
+            // Prevent the default action if it's not a navigation click
+            if (!e.target.closest('.text-group a')) {
+                e.preventDefault();
+
+                // Position and display the custom menu for the file
+                customMenu.style.display = 'block';
+                customMenu.style.left = `${e.pageX}px`;
+                customMenu.style.top = `${e.pageY}px`;
+
+                // Populate and show the custom menu based on the clicked file
+                customMenu.innerHTML = `
+                    <button onclick="renameFile('${fileName}')">Rename</button>
+                    <button onclick="moveFile('${fileName}');">Move</button>
+                    <button onclick="deleteFile('${fileName}');">Delete</button>
+                `;
+            }
+        } else {
+            // Hide the custom menus if the click is outside
+            if (!customMenu.contains(e.target)) {
+                customMenu.style.display = 'none';
+            }
         }
-    };
-    
-
-    files.forEach(file => {
-        file.addEventListener('click', function(e) {
-            const fileName = this.getAttribute('data-file-name');
-            showFileCustomMenu(e, fileName);
-        });
-    });
-
-    // Hide the custom menus when clicking elsewhere...
+    }, true); // Capture phase to ensure the event is caught as it propagates down
 });
 
 // Function to handle file rename
@@ -155,12 +152,23 @@ function moveFile(fileName) {
     alert(`Move file: ${fileName}`);
 }
 
+
+function slugify(fileName) {
+    return fileName.toString().toLowerCase()
+        .replace(/\s+/g, '-')           // Replace spaces with -
+        .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+        .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+        .replace(/^-+/, '')             // Trim - from start of text
+        .replace(/-+$/, '');            // Trim - from end of text
+}
+
+
 function deleteFile(fileName) {
     // Confirm before deleting
     if (!confirm('Are you sure you want to delete this file?')) return;
 
     // Use slugify-like logic or a mapping to find the form ID for non-trivial filenames
-    const formId = 'delete-file-' + fileName.replace(/[^a-zA-Z0-9]/g, '-'); // Simplified slugify
+    const formId = 'delete-file-' + slugify(fileName); // Simplified slugify
     const form = document.getElementById(formId);
     
     if (form) {
@@ -169,3 +177,58 @@ function deleteFile(fileName) {
         alert('Error: Could not find the deletion form for the file.');
     }
 }
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const customMenu = document.getElementById('customMenu');
+    const generalContextMenu = document.getElementById('generalContextMenu');
+
+    // Directory-specific custom menu
+    document.querySelectorAll('.directory').forEach(directory => {
+        directory.addEventListener('click', function(e) {
+            // Custom logic for directories
+        });
+    });
+
+    // File-specific custom menu
+    document.body.addEventListener('click', function(e) {
+        const fileElement = e.target.closest('.file');
+        if (fileElement) {
+            // Custom logic for files
+        }
+    });
+
+    // General context menu for the entire page
+    document.addEventListener('contextmenu', function(e) {
+        // Prevent the default right-click menu
+        e.preventDefault();
+
+        // Show the custom general context menu
+        generalContextMenu.style.display = 'block';
+        generalContextMenu.style.left = `${e.pageX}px`;
+        generalContextMenu.style.top = `${e.pageY}px`;
+    });
+
+    // Hide custom menus when clicking elsewhere
+    document.addEventListener('click', function(e) {
+        if (!customMenu.contains(e.target)) {
+            customMenu.style.display = 'none';
+        }
+        if (!generalContextMenu.contains(e.target)) {
+            generalContextMenu.style.display = 'none';
+        }
+    }, true);
+});
+
+// Functions for general context menu actions
+function performAction1() {
+    console.log("Action 1 triggered");
+    // Implement action 1
+}
+
+function performAction2() {
+    console.log("Action 2 triggered");
+    // Implement action 2
+}
+
+

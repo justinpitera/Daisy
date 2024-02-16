@@ -42,7 +42,7 @@
 
 
    /* Base styling for custom menus */
-   #customMenu, #formCustomMenu {
+   #customMenu, #formCustomMenu, #generalContextMenu {
     display: none;
     position: absolute;
     z-index: 1000;
@@ -55,7 +55,7 @@
 }
 
 /* Styling for buttons within custom menus */
-#customMenu button, #formCustomMenu button {
+#customMenu button, #formCustomMenu button, #generalContextMenu button {
     display: block;
     background-color: transparent; /* Make buttons transparent to match the menu background */
     border: none;
@@ -69,12 +69,12 @@
 }
 
 /* Remove border for the last button in the menu for a cleaner look */
-#customMenu button:last-child, #formCustomMenu button:last-child {
+#customMenu button:last-child, #formCustomMenu button:last-child, #generalContextMenu button:last-child {
     border-bottom: none;
 }
 
 /* Hover effect for buttons */
-#customMenu button:hover, #formCustomMenu button:hover {
+#customMenu button:hover, #formCustomMenu button:hover, #generalContextMenu button:hover {
     background-color: #e0e0e0;
 }
 
@@ -86,3 +86,4 @@
     background-color: #f0f0f0; /* Slightly different background for distinction */
     border-bottom: 1px solid #eee; /* Separator between title and first option */
 }
+
